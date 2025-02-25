@@ -1,0 +1,6 @@
+@dest_HostAddress = http://localhost:5241
+
+GET {{dest_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
