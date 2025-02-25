@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\lducrocq\\Desktop\\perso\\Where-to-\\dest\\dest\\dest.csproj": {}
+    "C:\\Users\\lducrocq\\Desktop\\dest\\dest\\dest\\dest.csproj": {}
   },
   "projects": {
-    "C:\\Users\\lducrocq\\Desktop\\perso\\Where-to-\\dest\\dest\\dest.csproj": {
+    "C:\\Users\\lducrocq\\Desktop\\dest\\dest\\dest\\dest.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lducrocq\\Desktop\\perso\\Where-to-\\dest\\dest\\dest.csproj",
+        "projectUniqueName": "C:\\Users\\lducrocq\\Desktop\\dest\\dest\\dest\\dest.csproj",
         "projectName": "dest",
-        "projectPath": "C:\\Users\\lducrocq\\Desktop\\perso\\Where-to-\\dest\\dest\\dest.csproj",
+        "projectPath": "C:\\Users\\lducrocq\\Desktop\\dest\\dest\\dest\\dest.csproj",
         "packagesPath": "C:\\Users\\lducrocq\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lducrocq\\Desktop\\perso\\Where-to-\\dest\\dest\\obj\\",
+        "outputPath": "C:\\Users\\lducrocq\\Desktop\\dest\\dest\\dest\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -49,6 +49,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "DotNetEnv": {
+              "target": "Package",
+              "version": "[3.1.1, )"
+            },
             "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
               "target": "Package",
               "version": "[8.0.10, )"
@@ -56,6 +60,18 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.13, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.2, )"
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[9.0.3, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.3, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
