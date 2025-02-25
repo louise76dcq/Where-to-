@@ -1,7 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using TravelPlannerAPI.Services;
 using TravelPlannerAPI.Models;
+using System.Text.Json;
+
+
+
 
 namespace TravelPlannerAPI.Controllers
 {
@@ -9,46 +14,111 @@ namespace TravelPlannerAPI.Controllers
     [ApiController]
     public class TravelController : ControllerBase
     {
-        private static readonly List<Destination> Destinations = new List<Destination>
+        private readonly HttpClient _httpClient;
+        private readonly AmadeusService _amadeusService;
+
+        public TravelController(HttpClient httpClient)
         {
-            new Destination { Name = "Rio", Price = 750, Temperature = 25, ImageUrl = "https://example.com/rio.jpg" },
-            new Destination { Name = "Aspen", Price = 800, Temperature = -5, ImageUrl = "https://example.com/aspen.jpg" },
-            new Destination { Name = "Dubai", Price = 900, Temperature = 35, ImageUrl = "https://example.com/dubai.jpg" },
-            new Destination { Name = "Chamonix", Price = 700, Temperature = -10, ImageUrl = "https://example.com/chamonix.jpg" }
-        };
-
-        private Destination GetRandomDestination(string environment, int budget)
-        {
-            var filteredDestinations = Destinations
-                .Where(d => d.Price <= budget &&
-                            ((environment == "sunny" && d.Temperature > 0) ||
-                             (environment == "snowy" && d.Temperature < 0)))
-                .ToList();
-
-            if (!filteredDestinations.Any())
-                return null;
-
-            return filteredDestinations[new System.Random().Next(filteredDestinations.Count)];
+            _httpClient = httpClient;
+            _amadeusService = new AmadeusService(_httpClient);
         }
 
-        [HttpPost("preferences")]
-        public IActionResult GetDestination([FromBody] TravelPreference preference)
+        /// <summary>
+        /// Recherche des vols de Paris (CDG) vers une destination donnée.
+        /// </summary>
+        /// <param name="destination">Code IATA de la destination (ex: JFK pour New York)</param>
+        /// <returns>Liste des vols disponibles</returns>
+        [HttpGet("flights")]
+        public async Task<IActionResult> GetFlights([FromQuery] string destination, [FromQuery] int budget)
         {
-            var destination = GetRandomDestination(preference.Environment, preference.Budget);
-            if (destination == null)
-                return NotFound(new { Message = "No destinations match your preferences." });
-
-            return Ok(destination);
-        }
-
-        [HttpGet("booking")]
-        public IActionResult GetBookingLinks([FromQuery] string destination)
-        {
-            return Ok(new
+            try
             {
-                AirFrance = $"https://www.airfrance.com/book/{destination}",
-                Airbnb = $"https://www.airbnb.com/s/{destination}"
-            });
+                var token = await _amadeusService.GetAccessToken();
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                string url = $"https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=CDG&destinationLocationCode={destination}&departureDate=2024-06-01&adults=1&max=10";
+                var response = await _httpClient.GetAsync(url);
+
+                if (!response.IsSuccessStatusCode)
+                    return StatusCode((int)response.StatusCode, new { error = "Erreur lors de la récupération des vols." });
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                using JsonDocument jsonDocument = JsonDocument.Parse(responseContent);
+                var flights = jsonDocument.RootElement.GetProperty("data").EnumerateArray()
+                    .Where(f => f.GetProperty("price").GetProperty("total").GetDecimal() <= budget)
+                    .Select(f => new
+                    {
+                        Price = f.GetProperty("price").GetProperty("total").GetString(),
+                        Airline = f.GetProperty("validatingAirlineCodes")[0].GetString(),
+                        Departure = f.GetProperty("itineraries")[0].GetProperty("segments")[0].GetProperty("departure").GetProperty("iataCode").GetString(),
+                        Arrival = f.GetProperty("itineraries")[0].GetProperty("segments")[0].GetProperty("arrival").GetProperty("iataCode").GetString()
+                    })
+                    .ToList();
+
+                return Ok(flights);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Erreur interne du serveur.", details = ex.Message });
+            }
+        }
+
+
+
+        /// <summary>
+        /// Recherche des hôtels dans une ville donnée.
+        /// </summary>
+        /// <param name="cityCode">Code de la ville (ex: PAR pour Paris)</param>
+        /// <returns>Liste des hôtels disponibles</returns>
+        [HttpGet("hotels")]
+        public async Task<IActionResult> GetHotels([FromQuery] string cityCode, [FromQuery] int budget)
+        {
+            try
+            {
+                var token = await _amadeusService.GetAccessToken();
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                string url = $"https://test.api.amadeus.com/v2/shopping/hotel-offers?cityCode={cityCode}&radius=10&radiusUnit=KM&paymentPolicy=NONE&includeClosed=false&bestRateOnly=true&view=FULL";
+                var response = await _httpClient.GetAsync(url);
+
+                if (!response.IsSuccessStatusCode)
+                    return StatusCode((int)response.StatusCode, new { error = "Erreur lors de la récupération des hôtels." });
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                using JsonDocument jsonDocument = JsonDocument.Parse(responseContent);
+                var hotels = jsonDocument.RootElement.GetProperty("data").EnumerateArray()
+                    .Where(h => h.GetProperty("offers")[0].GetProperty("price").GetProperty("total").GetDecimal() <= budget)
+                    .Select(h => new
+                    {
+                        Name = h.GetProperty("hotel").GetProperty("name").GetString(),
+                        Price = h.GetProperty("offers")[0].GetProperty("price").GetProperty("total").GetString(),
+                        Currency = h.GetProperty("offers")[0].GetProperty("price").GetProperty("currency").GetString(),
+                        Address = h.GetProperty("hotel").GetProperty("address").GetProperty("lines")[0].GetString()
+                    })
+                    .ToList();
+
+                return Ok(hotels);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Erreur interne du serveur.", details = ex.Message });
+            }
+        }
+
+
+        
+        [HttpPost("preferences")]
+        public IActionResult SaveUserPreferences([FromBody] TravelPreference preference)
+        {
+            if (preference.Budget <= 0 || string.IsNullOrEmpty(preference.Environment))
+            {
+                return BadRequest(new { error = "Veuillez entrer un budget valide et un type d’environnement." });
+            }
+
+            // Stocker la préférence temporairement (en attendant une base de données)
+            return Ok(new { message = "Préférences enregistrées.", preference });
         }
     }
 }
