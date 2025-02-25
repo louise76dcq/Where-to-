@@ -120,5 +120,7 @@ namespace TravelPlannerAPI.Controllers
             // Stocker la préférence temporairement (en attendant une base de données)
             return Ok(new { message = "Préférences enregistrées.", preference });
         }
+        
+        
     }
 }
