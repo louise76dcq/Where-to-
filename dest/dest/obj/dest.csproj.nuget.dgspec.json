@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\lducrocq\\Desktop\\dest\\dest\\dest\\dest.csproj": {}
+    "C:\\Users\\louis\\RiderProjects\\caca\\dest\\dest\\dest.csproj": {}
   },
   "projects": {
-    "C:\\Users\\lducrocq\\Desktop\\dest\\dest\\dest\\dest.csproj": {
+    "C:\\Users\\louis\\RiderProjects\\caca\\dest\\dest\\dest.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lducrocq\\Desktop\\dest\\dest\\dest\\dest.csproj",
+        "projectUniqueName": "C:\\Users\\louis\\RiderProjects\\caca\\dest\\dest\\dest.csproj",
         "projectName": "dest",
-        "projectPath": "C:\\Users\\lducrocq\\Desktop\\dest\\dest\\dest\\dest.csproj",
-        "packagesPath": "C:\\Users\\lducrocq\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lducrocq\\Desktop\\dest\\dest\\dest\\obj\\",
+        "projectPath": "C:\\Users\\louis\\RiderProjects\\caca\\dest\\dest\\dest.csproj",
+        "packagesPath": "C:\\Users\\louis\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\louis\\RiderProjects\\caca\\dest\\dest\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\lducrocq\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\louis\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -89,24 +89,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Runtime.linux-x64",
-              "version": "[8.0.13, 8.0.13]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Crossgen2.win-x64",
-              "version": "[8.0.13, 8.0.13]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.linux-x64",
-              "version": "[8.0.13, 8.0.13]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Runtime.linux-x64",
-              "version": "[8.0.13, 8.0.13]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -115,12 +97,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.406/PortableRuntimeIdentifierGraph.json"
-        }
-      },
-      "runtimes": {
-        "linux-x64": {
-          "#import": []
+          "runtimeIdentifierGraphPath": "C:\\Users\\louis\\.dotnet\\sdk\\8.0.406/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
